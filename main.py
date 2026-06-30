@@ -22,7 +22,8 @@ def main():
         run_checker(ORIGINAL_DATA_PATH)
     elif args.command == "generate":
         print("Running generator...")
-        # TODO: call generator logic
+        from generator.generator import run_generator
+        run_generator(num_chats=10)
     elif args.command == "evaluate":
         print("Running evaluator...")
         # TODO: call evaluator logic
