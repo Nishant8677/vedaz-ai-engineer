@@ -1,0 +1,8 @@
+python-dotenv
+pydantic
+pandas
+scikit-learn
+rapidfuzz
+together
+tqdm
+pytest
