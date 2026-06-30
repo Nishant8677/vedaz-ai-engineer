@@ -3,6 +3,7 @@ import json
 from openai import OpenAI
 from google import genai
 from typing import Optional, Dict, Any, List
+from tenacity import retry, wait_exponential, stop_after_attempt, retry_if_exception_type
 from utils.config import OPENROUTER_API_KEY, GEMINI_API_KEY, DEFAULT_MODEL
 from utils.logger import get_logger
 
@@ -25,6 +26,12 @@ if GEMINI_API_KEY:
     except Exception as e:
         logger.error(f"Failed to initialize Gemini client: {e}")
 
+@retry(
+    wait=wait_exponential(multiplier=1, min=2, max=10),
+    stop=stop_after_attempt(3),
+    retry=retry_if_exception_type(Exception),
+    reraise=False
+)
 def generate_text(messages: List[Dict[str, str]], model: str = DEFAULT_MODEL, max_tokens: int = 1024, temperature: float = 0.7, json_mode: bool = False) -> Optional[str]:
     """Generate text using OpenRouter API."""
     if not client:
@@ -50,8 +57,14 @@ def generate_text(messages: List[Dict[str, str]], model: str = DEFAULT_MODEL, ma
         return response.choices[0].message.content
     except Exception as e:
         logger.error(f"Error calling OpenRouter API: {e}")
-        return None
+        raise e  # Reraise to trigger tenacity retry
 
+@retry(
+    wait=wait_exponential(multiplier=1, min=2, max=10),
+    stop=stop_after_attempt(3),
+    retry=retry_if_exception_type(Exception),
+    reraise=False
+)
 def generate_with_gemini(prompt: str, json_mode: bool = False) -> Optional[str]:
     """Generate text using Gemini 2.5 Flash."""
     if not gemini_client:
@@ -75,4 +88,4 @@ def generate_with_gemini(prompt: str, json_mode: bool = False) -> Optional[str]:
         return response.text
     except Exception as e:
         logger.error(f"Error calling Gemini API: {e}")
-        return None
+        raise e  # Reraise to trigger tenacity retry

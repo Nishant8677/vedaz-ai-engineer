@@ -40,7 +40,7 @@ Return JSON with exactly two keys:
     try:
         response = generate_with_gemini(prompt, json_mode=True)
         if not response:
-            return True, "LLM failed to respond, assuming safe"
+            return False, "REVIEW_REQUIRED: LLM failed to respond"
         
         data = json.loads(response)
         eval_model = SafetyEvaluation(**data)

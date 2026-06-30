@@ -87,6 +87,12 @@ python main.py evaluate
 ```
 This runs a set of test questions against the assistant and uses an LLM judge to score them on Safety, Warmth, and Honesty. Results are saved in `evaluation.csv` and `evaluation_summary.md`.
 
+## Assumptions
+
+- **Dataset Format:** The dataset strictly follows the OpenAI-style chat format (role/content).
+- **Filtering Approach:** Regex is used as a fast, first-pass filter to catch explicit violations, while Gemini performs the nuanced, semantic safety evaluation.
+- **Provider Agnosticism:** The generation architecture assumes OpenRouter is used as the gateway, making the system provider-agnostic.
+
 ## Design Decisions
 
 - **Provider-Agnostic Generation:** The generation pipeline is provider-agnostic. By abstracting generation behind OpenRouter, different open-weight models (like DeepSeek, Llama 3.3, or Qwen) can be evaluated simply by changing the `DEFAULT_MODEL` variable, without modifying the rest of the system.
@@ -98,7 +104,7 @@ This runs a set of test questions against the assistant and uses an LLM judge to
 
 ## Limitations
 
-- **Regex Limitations:** Rule-based regex can miss subtle violations or variations in spelling.
+- **Regex Limitations:** Rule-based regex catches obvious explicit words, but will completely miss subtle or semantic phrasing (e.g., "Your life will be destroyed", "Nothing can save you"). This is exactly why the hybrid LLM judge is required as a secondary net.
 - **LLM Judge Variability:** LLM judgments can sometimes be inconsistent between runs.
 - **RapidFuzz vs Semantic:** RapidFuzz detects lexical similarity but might miss semantic duplicates (different words, same meaning). For large datasets, a transition to SentenceTransformers would be necessary.
 - **Dataset Size:** The pipeline works wonderfully for smaller datasets but might need batching logic or parallelization for processing tens of thousands of rows.

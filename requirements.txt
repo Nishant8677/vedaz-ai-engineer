@@ -4,6 +4,7 @@ pandas
 scikit-learn
 rapidfuzz
 openai
+tenacity
 tqdm
 pytest
 google-genai

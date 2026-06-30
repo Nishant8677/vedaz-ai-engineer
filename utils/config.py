@@ -23,6 +23,7 @@ GENERATED_DATA_PATH = DATA_DIR / "generated.jsonl"
 REPORT_JSON_PATH = DATA_DIR / "checker_report.json"
 EVAL_CSV_PATH = DATA_DIR / "evaluation.csv"
 EVAL_MD_PATH = DATA_DIR / "evaluation_summary.md"
+TEST_QUESTIONS_PATH = DATA_DIR / "test_questions.jsonl"
 
 # Model constants
 DEFAULT_MODEL = "deepseek/deepseek-chat"
