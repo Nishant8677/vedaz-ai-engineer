@@ -1,0 +1,19 @@
+{
+    "total_input": 5,
+    "invalid_schema": 0,
+    "exact_duplicates": 0,
+    "near_duplicates": 0,
+    "unsafe_chats": 1,
+    "safe_and_valid_chats": 4,
+    "train_size": 3,
+    "test_size": 1,
+    "statistics": {
+        "num_chats": 4,
+        "avg_turns": 3.0,
+        "avg_words_per_chat": 238.75,
+        "longest_chat_words": 257,
+        "shortest_chat_words": 208,
+        "avg_assistant_words": 144.0,
+        "avg_user_words": 34.0
+    }
+}
