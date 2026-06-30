@@ -3,7 +3,7 @@ pydantic
 pandas
 scikit-learn
 rapidfuzz
-together
+openai
 tqdm
 pytest
 google-genai

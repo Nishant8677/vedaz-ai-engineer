@@ -1,19 +1,22 @@
 import os
 import json
-from together import Together
+from openai import OpenAI
 from google import genai
 from typing import Optional, Dict, Any, List
-from utils.config import TOGETHER_API_KEY, GEMINI_API_KEY, DEFAULT_MODEL
+from utils.config import OPENROUTER_API_KEY, GEMINI_API_KEY, DEFAULT_MODEL
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
 
 client = None
-if TOGETHER_API_KEY:
+if OPENROUTER_API_KEY:
     try:
-        client = Together(api_key=TOGETHER_API_KEY)
+        client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=OPENROUTER_API_KEY,
+        )
     except Exception as e:
-        logger.error(f"Failed to initialize Together client: {e}")
+        logger.error(f"Failed to initialize OpenRouter client: {e}")
 
 gemini_client = None
 if GEMINI_API_KEY:
@@ -23,9 +26,9 @@ if GEMINI_API_KEY:
         logger.error(f"Failed to initialize Gemini client: {e}")
 
 def generate_text(messages: List[Dict[str, str]], model: str = DEFAULT_MODEL, max_tokens: int = 1024, temperature: float = 0.7, json_mode: bool = False) -> Optional[str]:
-    """Generate text using Together API."""
+    """Generate text using OpenRouter API."""
     if not client:
-        logger.error("Together API client is not initialized. Check your TOGETHER_API_KEY.")
+        logger.error("OpenRouter API client is not initialized. Check your OPENROUTER_API_KEY.")
         return None
         
     try:
@@ -33,7 +36,11 @@ def generate_text(messages: List[Dict[str, str]], model: str = DEFAULT_MODEL, ma
             "model": model,
             "messages": messages,
             "max_tokens": max_tokens,
-            "temperature": temperature
+            "temperature": temperature,
+            "extra_headers": {
+                "HTTP-Referer": "https://github.com/vedaz-ai-engineer",
+                "X-Title": "Vedaz AI Engineer",
+            }
         }
         
         if json_mode:
@@ -42,7 +49,7 @@ def generate_text(messages: List[Dict[str, str]], model: str = DEFAULT_MODEL, ma
         response = client.chat.completions.create(**kwargs)
         return response.choices[0].message.content
     except Exception as e:
-        logger.error(f"Error calling Together API: {e}")
+        logger.error(f"Error calling OpenRouter API: {e}")
         return None
 
 def generate_with_gemini(prompt: str, json_mode: bool = False) -> Optional[str]:

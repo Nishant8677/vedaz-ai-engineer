@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Base paths
@@ -25,4 +25,4 @@ EVAL_CSV_PATH = DATA_DIR / "evaluation.csv"
 EVAL_MD_PATH = DATA_DIR / "evaluation_summary.md"
 
 # Model constants
-DEFAULT_MODEL = "deepseek-ai/DeepSeek-V3"
+DEFAULT_MODEL = "deepseek/deepseek-chat"

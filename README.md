@@ -29,7 +29,8 @@ This project provides tools to:
                            ▼
                     Chat Generator
                            │
-               Together AI (DeepSeek)
+               OpenRouter (Generator)
+              DeepSeek / Qwen / Llama
                            │
                            ▼
                   Generated Chats
@@ -60,9 +61,9 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-2. Copy `.env.example` to `.env` and add your Together API and Gemini API keys:
+2. Copy `.env.example` to `.env` and add your OpenRouter API and Gemini API keys:
 ```bash
-TOGETHER_API_KEY=your_together_key_here
+OPENROUTER_API_KEY=your_openrouter_key_here
 GEMINI_API_KEY=your_gemini_key_here
 ```
 
@@ -78,7 +79,7 @@ This validates the dataset, checks for duplicates, flags unsafe content, splits 
 ```bash
 python main.py generate
 ```
-This uses Together AI to generate new simulated chats and automatically filters out any that fail safety or schema checks, saving valid ones to `generated.jsonl`.
+This uses OpenRouter to generate new simulated chats and automatically filters out any that fail safety or schema checks, saving valid ones to `generated.jsonl`.
 
 ### 3. Evaluate Responses
 ```bash
@@ -88,7 +89,8 @@ This runs a set of test questions against the assistant and uses an LLM judge to
 
 ## Design Decisions
 
-- **Cross-Model Evaluation:** We use Together AI (DeepSeek) to generate the responses, but we use Gemini 2.5 Flash as the evaluator and safety checker. This eliminates the self-evaluation bias that happens when a model family rates its own outputs.
+- **Provider-Agnostic Generation:** The generation pipeline is provider-agnostic. By abstracting generation behind OpenRouter, different open-weight models (like DeepSeek, Llama 3.3, or Qwen) can be evaluated simply by changing the `DEFAULT_MODEL` variable, without modifying the rest of the system.
+- **Cross-Model Evaluation:** We use OpenRouter to generate the responses, but we use Gemini 2.5 Flash as the evaluator and safety checker. This eliminates the self-evaluation bias that happens when a model family rates its own outputs.
 - **Why RapidFuzz?** For dataset sizes typical in this assignment (15-30 chats), RapidFuzz is highly effective, lightweight, and doesn't require downloading large sentence embedding models.
 - **Why Hybrid Safety?** Regex handles explicit violations instantly, while the Gemini LLM judge catches nuanced or context-dependent violations (like hallucinating planetary positions).
 - **Why Pydantic?** Enforces strict schema typing universally across all modules, drastically reducing downstream parsing errors.
