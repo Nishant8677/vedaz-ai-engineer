@@ -17,7 +17,9 @@ def main():
 
     if args.command == "check":
         print("Running checker...")
-        # TODO: call checker logic
+        from checker.checker import run_checker
+        from utils.config import ORIGINAL_DATA_PATH
+        run_checker(ORIGINAL_DATA_PATH)
     elif args.command == "generate":
         print("Running generator...")
         # TODO: call generator logic
