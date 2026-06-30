@@ -26,7 +26,8 @@ def main():
         run_generator(num_chats=10)
     elif args.command == "evaluate":
         print("Running evaluator...")
-        # TODO: call evaluator logic
+        from evaluator.evaluator import run_evaluator
+        run_evaluator()
     else:
         parser.print_help()
 
