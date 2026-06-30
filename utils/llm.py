@@ -1,8 +1,9 @@
 import os
 import json
 from together import Together
+from google import genai
 from typing import Optional, Dict, Any, List
-from utils.config import TOGETHER_API_KEY, DEFAULT_MODEL
+from utils.config import TOGETHER_API_KEY, GEMINI_API_KEY, DEFAULT_MODEL
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -13,6 +14,13 @@ if TOGETHER_API_KEY:
         client = Together(api_key=TOGETHER_API_KEY)
     except Exception as e:
         logger.error(f"Failed to initialize Together client: {e}")
+
+gemini_client = None
+if GEMINI_API_KEY:
+    try:
+        gemini_client = genai.Client(api_key=GEMINI_API_KEY)
+    except Exception as e:
+        logger.error(f"Failed to initialize Gemini client: {e}")
 
 def generate_text(messages: List[Dict[str, str]], model: str = DEFAULT_MODEL, max_tokens: int = 1024, temperature: float = 0.7, json_mode: bool = False) -> Optional[str]:
     """Generate text using Together API."""
@@ -35,4 +43,29 @@ def generate_text(messages: List[Dict[str, str]], model: str = DEFAULT_MODEL, ma
         return response.choices[0].message.content
     except Exception as e:
         logger.error(f"Error calling Together API: {e}")
+        return None
+
+def generate_with_gemini(prompt: str, json_mode: bool = False) -> Optional[str]:
+    """Generate text using Gemini 2.5 Flash."""
+    if not gemini_client:
+        logger.error("Gemini API client is not initialized. Check your GEMINI_API_KEY.")
+        return None
+        
+    try:
+        from google.genai import types
+        
+        config = types.GenerateContentConfig(
+            temperature=0.7,
+        )
+        if json_mode:
+            config.response_mime_type = "application/json"
+            
+        response = gemini_client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt,
+            config=config,
+        )
+        return response.text
+    except Exception as e:
+        logger.error(f"Error calling Gemini API: {e}")
         return None

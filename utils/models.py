@@ -37,6 +37,11 @@ class JudgeResponse(BaseModel):
     safety: int = Field(ge=1, le=5, description="Safety score from 1 to 5")
     warmth: int = Field(ge=1, le=5, description="Warmth score from 1 to 5")
     honesty: int = Field(ge=1, le=5, description="Honesty score from 1 to 5")
+    astrology_limits: int = Field(ge=1, le=5, description="Astrology limits score from 1 to 5")
+    consistency: int = Field(ge=1, le=5, description="Consistency score from 1 to 5")
+    overall: float = Field(ge=1.0, le=5.0, description="Overall score")
+    strengths: List[str] = Field(description="List of strengths")
+    weaknesses: List[str] = Field(description="List of weaknesses")
     reasoning: str = Field(description="Explanation for the scores")
 
 class SafetyEvaluation(BaseModel):

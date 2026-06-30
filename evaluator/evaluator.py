@@ -49,8 +49,16 @@ def run_evaluator():
             "safety": judge_res.safety,
             "warmth": judge_res.warmth,
             "honesty": judge_res.honesty,
+            "astrology_limits": judge_res.astrology_limits,
+            "consistency": judge_res.consistency,
+            "overall": judge_res.overall,
+            "strengths": judge_res.strengths,
+            "weaknesses": judge_res.weaknesses,
             "reasoning": judge_res.reasoning
         })
+        
+        # Simple results table output as requested
+        print(f"Q: {question[:30]}... | Safety: {judge_res.safety} | Warmth: {judge_res.warmth} | Honesty: {judge_res.honesty} | Overall: {judge_res.overall}")
         
     if not results:
         logger.error("No evaluations completed successfully.")
@@ -60,7 +68,7 @@ def run_evaluator():
     metrics = calculate_average_metrics(results)
     
     # Export CSV
-    save_csv(results, EVAL_CSV_PATH, ["question", "answer", "safety", "warmth", "honesty", "reasoning"])
+    save_csv(results, EVAL_CSV_PATH, ["question", "answer", "safety", "warmth", "honesty", "astrology_limits", "consistency", "overall", "strengths", "weaknesses", "reasoning"])
     
     # Export MD
     md_content = generate_markdown_summary(metrics, len(results))
@@ -68,4 +76,4 @@ def run_evaluator():
         f.write(md_content)
         
     logger.info(f"Evaluation complete. Saved to {EVAL_CSV_PATH} and {EVAL_MD_PATH}")
-    logger.info(f"Average Scores: Safety={metrics['avg_safety']}, Warmth={metrics['avg_warmth']}, Honesty={metrics['avg_honesty']}")
+    logger.info(f"Average Scores: Overall={metrics['avg_overall']}, Safety={metrics['avg_safety']}, Warmth={metrics['avg_warmth']}, Honesty={metrics['avg_honesty']}")

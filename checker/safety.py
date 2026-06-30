@@ -2,7 +2,7 @@ import re
 import json
 from typing import Dict, Any, Tuple
 from utils.models import SafetyEvaluation
-from utils.llm import generate_text
+from utils.llm import generate_with_gemini
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -38,7 +38,7 @@ Return JSON with exactly two keys:
 "reason": string (short explanation)
 """
     try:
-        response = generate_text([{"role": "user", "content": prompt}], json_mode=True)
+        response = generate_with_gemini(prompt, json_mode=True)
         if not response:
             return True, "LLM failed to respond, assuming safe"
         

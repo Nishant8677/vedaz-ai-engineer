@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Base paths
 BASE_DIR = Path(__file__).resolve().parent.parent

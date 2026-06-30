@@ -14,51 +14,41 @@ This project provides tools to:
 ## Architecture
 
 ```text
-                     Original Dataset (.jsonl)
-                               │
-                               ▼
-                     ┌───────────────────┐
-                     │   Chat Checker    │
-                     └───────────────────┘
-                      │      │      │
-                      │      │      │
-          Schema Validation │  Duplicate Detection
-                             │
-                        Safety Detection
-                             │
-                             ▼
-                     Dataset Statistics
-                             │
-                             ▼
-                     Train / Test Split
-                             │
-                             ▼
-                 ┌────────────────────────┐
-                 │     Chat Generator     │
-                 └────────────────────────┘
-                             │
-                     Together AI / DeepSeek
-                             │
-                             ▼
-                     Generated Conversation
-                             │
-                             ▼
-                      Run Checker Again
-                             │
+                    Original Dataset (.jsonl)
+                           │
+                           ▼
+                      Chat Checker
+                 ┌─────────┴─────────┐
+                 │                   │
+            Regex Rules         Gemini Judge
+                 │                   │
+                 └─────────┬─────────┘
+                           │
+                     Checker Report
+                           │
+                           ▼
+                    Chat Generator
+                           │
+               Together AI (DeepSeek)
+                           │
+                           ▼
+                  Generated Chats
+                           │
+                           ▼
+                   Run Checker Again
+                           │
                    PASS ─────────── FAIL
                     │                 │
                     ▼                 ▼
              generated.jsonl      Regenerate
                     │
                     ▼
-              ┌──────────────────┐
-              │ Quality Evaluator│
-              └──────────────────┘
-                    │
-          LLM-as-a-Judge Scoring
-                    │
-                    ▼
-         CSV + Markdown + Summary Report
+                  Quality Evaluation
+                           │
+                    Gemini Judge
+                           │
+                           ▼
+                  evaluation.csv
 ```
 
 ## Installation
@@ -70,9 +60,10 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-2. Copy `.env.example` to `.env` and add your Together API key:
+2. Copy `.env.example` to `.env` and add your Together API and Gemini API keys:
 ```bash
-TOGETHER_API_KEY=your_key_here
+TOGETHER_API_KEY=your_together_key_here
+GEMINI_API_KEY=your_gemini_key_here
 ```
 
 ## Usage
@@ -97,8 +88,9 @@ This runs a set of test questions against the assistant and uses an LLM judge to
 
 ## Design Decisions
 
+- **Cross-Model Evaluation:** We use Together AI (DeepSeek) to generate the responses, but we use Gemini 2.5 Flash as the evaluator and safety checker. This eliminates the self-evaluation bias that happens when a model family rates its own outputs.
 - **Why RapidFuzz?** For dataset sizes typical in this assignment (15-30 chats), RapidFuzz is highly effective, lightweight, and doesn't require downloading large sentence embedding models.
-- **Why Hybrid Safety?** Regex handles explicit violations instantly, while the LLM judge catches nuanced or context-dependent violations (like hallucinating planetary positions).
+- **Why Hybrid Safety?** Regex handles explicit violations instantly, while the Gemini LLM judge catches nuanced or context-dependent violations (like hallucinating planetary positions).
 - **Why Pydantic?** Enforces strict schema typing universally across all modules, drastically reducing downstream parsing errors.
 - **Why reuse the checker?** Running generated chats through the exact same checker ensures our synthetic data meets the exact same quality standard as human data.
 
